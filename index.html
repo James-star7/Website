@@ -23,6 +23,7 @@
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth; overflow-x:hidden; width:100%;}
+body.no-scroll{overflow:hidden; height:100%;}
 body{
   font-family:'Share Tech Mono', monospace;
   margin:0;padding:0;
@@ -187,6 +188,10 @@ main.container{max-width:1100px;margin:0 auto;width:100%;padding:0 16px;}
 .lightbox.open .lightbox-content img{transform:scale(1);}
 .lightbox-caption{margin-top:14px;font-family:'Press Start 2P', monospace;font-size:11px;color:var(--neon-amber);}
 .lightbox-close{position:absolute;top:20px;right:30px;font-size:34px;color:#fff;cursor:pointer;background:none;border:none;line-height:1;}
+@media (max-width:480px){
+  .lightbox-close{top:10px;right:14px;font-size:38px;padding:6px 10px;}
+  .lightbox-content{max-width:94vw;}
+}
 .lightbox-close:hover{color:var(--neon-pink);}
 
 /* Social */
@@ -216,14 +221,29 @@ main.container{max-width:1100px;margin:0 auto;width:100%;padding:0 16px;}
 footer{background:var(--bg-1);padding:24px;text-align:center;border-top:2px solid var(--neon-cyan);}
 footer p{margin:0;font-size:11px;letter-spacing:.5px;color:var(--text-dim);}
 
+.nav-overlay{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:1050;
+  display:none;
+}
+nav.main-nav{
+  position:absolute;top:0;right:0;height:100%;
+  transform:translateX(100%);
+  transition:transform .35s ease;
+  pointer-events:auto;
+}
 @media (max-width:768px){
+  .nav-overlay{display:block;}
   nav.main-nav{
-    position:fixed;top:0;right:-100%;height:100vh;width:70%;max-width:280px;
+    width:70%;max-width:280px;
     background:var(--bg-2);flex-direction:column;align-items:flex-start;
-    padding:90px 24px;transition:right .35s ease;
+    padding:90px 24px;
     box-shadow:-4px 0 25px rgba(20,241,217,0.2);
   }
-  nav.main-nav.open{right:0;}
+  nav.main-nav.open{transform:translateX(0);}
   nav.main-nav a{margin:12px 0;font-size:16px;}
   .menu-toggle{display:flex;}
   .section{padding:28px 14px;}
@@ -259,12 +279,14 @@ footer p{margin:0;font-size:11px;letter-spacing:.5px;color:var(--text-dim);}
     <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
+  </div>
+  <div class="nav-overlay" id="navOverlay">
     <nav class="main-nav" id="mainNav">
       <a href="#home" class="nav-link">Home</a>
-      <a href="#My-Profile" class="nav-link">My Profile</a>
-      <a href="#portfolio" class="nav-link">Portfolio</a>
-      <a href="#certificates" class="nav-link">Certificates</a>
-      <a href="#social-media" class="nav-link">Social Media</a>
+      <a href="#My-Profile" class="nav-link">Profile</a>
+      <a href="#portfolio" class="nav-link">Pengalaman</a>
+      <a href="#certificates" class="nav-link">Sertifikat</a>
+      <a href="#social-media" class="nav-link">Sosial Media</a>
     </nav>
   </div>
 </header>
@@ -371,6 +393,7 @@ menuToggle.addEventListener('click', () => {
   const isOpen = mainNav.classList.toggle('open');
   menuToggle.classList.toggle('open', isOpen);
   menuToggle.setAttribute('aria-expanded', isOpen);
+  document.body.classList.toggle('no-scroll', isOpen);
 });
 document.querySelectorAll('.nav-link').forEach(link => {
   link.addEventListener('click', () => {
@@ -415,6 +438,7 @@ document.querySelectorAll('.marquee-track .card:not(.empty-slot)').forEach(item 
     lightboxCaption.textContent = item.dataset.caption || (titleElement ? titleElement.textContent : '');
     
     lightbox.classList.add('open');
+    document.body.classList.add('no-scroll');
   });
 });
 
@@ -425,9 +449,10 @@ if (brandLogo) {
     lightboxImg.alt = brandLogo.getAttribute('alt');
     lightboxCaption.textContent = 'James Adi Putra - Official Logo';
     lightbox.classList.add('open');
+    document.body.classList.add('no-scroll');
   });
 }
-function closeLightbox(){ lightbox.classList.remove('open'); }
+function closeLightbox(){ lightbox.classList.remove('open'); document.body.classList.remove('no-scroll');}
 lightboxClose.addEventListener('click', closeLightbox);
 lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
